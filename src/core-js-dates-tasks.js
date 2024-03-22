@@ -49,7 +49,7 @@ function getTime(date) {
  */
 function getDayName(date) {
   const dateObj = new Date(date);
-  const day = dateObj.getDay();
+  const day = dateObj.getUTCDay();
   let dayStr;
   switch (day) {
     case 0:
@@ -91,8 +91,9 @@ function getDayName(date) {
  * Date('2024-02-16T00:00:00Z') => Date('2024-02-23T00:00:00Z')
  */
 function getNextFriday(date) {
-  const delta = date.getDay() >= 5 ? 12 - date.getDay() : 5 - date.getDay();
-  return new Date(date.setDate(date.getDate() + delta));
+  const delta =
+    date.getUTCDay() >= 5 ? 12 - date.getUTCDay() : 5 - date.getUTCDay();
+  return new Date(date.setUTCDate(date.getUTCDate() + delta));
 }
 
 /**
@@ -164,8 +165,8 @@ function isDateInPeriod(date, period) {
  */
 function formatDate(date) {
   let dateObj = new Date(date);
-  dateObj = new Date(dateObj - 10800000);
-  return `${dateObj.getMonth() + 1}/${dateObj.getDate()}/${dateObj.getFullYear()}, ${dateObj.getHours() % 12 || 12}:${dateObj.getMinutes().toString().padStart(2, '0')}:${dateObj.getSeconds().toString().padStart(2, '0')} ${dateObj.getHours() >= 12 ? 'PM' : 'AM'}`;
+  dateObj = new Date(dateObj);
+  return `${dateObj.getUTCMonth() + 1}/${dateObj.getUTCDate()}/${dateObj.getUTCFullYear()}, ${dateObj.getUTCHours() % 12 || 12}:${dateObj.getUTCMinutes().toString().padStart(2, '0')}:${dateObj.getSeconds().toString().padStart(2, '0')} ${dateObj.getUTCHours() >= 12 ? 'PM' : 'AM'}`;
 }
 
 /**
@@ -204,11 +205,11 @@ function getCountWeekendsInMonth(month, year) {
  * Date(2024, 1, 23) => 8
  */
 function getWeekNumberByDate(date) {
-  const start = new Date(date.getFullYear(), 0, 1);
-  let result = start.getDay() === 1 ? 0 : 1;
+  const start = new Date(date.getUTCFullYear(), 0, 1);
+  let result = start.getUTCDay() === 1 ? 0 : 1;
   while (start <= date) {
-    if (start.getDay() === 1) result += 1;
-    start.setDate(start.getDate() + 1);
+    if (start.getUTCDay() === 1) result += 1;
+    start.setUTCDate(start.getUTCDate() + 1);
   }
   return result;
 }
@@ -224,12 +225,13 @@ function getWeekNumberByDate(date) {
  * Date(2024, 0, 13) => Date(2024, 8, 13)
  * Date(2023, 1, 1) => Date(2023, 9, 13)
  */
+
 function getNextFridayThe13th(date) {
-  const dateCopy = date;
-  while (!(dateCopy.getDay() === 5 && dateCopy.getDate() === 13)) {
-    date.setDate(dateCopy.getDate() + 1);
+  while (!(date.getDay() === 5 && date.getDate() === 13)) {
+    date.setDate(date.getDate() + 1);
   }
-  return dateCopy;
+  date.setHours(0);
+  return date;
 }
 
 /**
